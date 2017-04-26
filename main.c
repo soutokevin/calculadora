@@ -173,7 +173,7 @@ list_t* lexer(char input[]) {
     if (c >= '0' && c <= '9') {
       double num = atof(&input[i]);
       push_end(list, Number, num);
-      while (input[i] == '.' || (input[i] >= '0' && input[i] <= '9')) i++;
+      while (input[i+1] == '.' || (input[i+1] >= '0' && input[i+1] <= '9')) i++;
     } else if (c == '+') {
       push_end(list, Add, 0);
     } else if (c == '-') {
