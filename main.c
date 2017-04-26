@@ -133,14 +133,44 @@ double pop_start(list_t * list) {
 // Fim da Lista --------------------------------------------------------------------------------- //
 
 list_t* lexer(char input[]) {
-  return new_list();
+  list_t *list = new_list();
+
+  for (int i = 0; input[i]; i++) {
+    char c = input[i];
+
+    if (c >= '0' && c <= '9') {
+      double num = atof(&input[i]);
+      push_end(list, Number, num);
+    } else if (c == '+') {
+      push_end(list, Add, 0);
+    } else if (c == '-') {
+      push_end(list, Subtract, 0);
+    } else if (c == '*') {
+      push_end(list, Multiply, 0);
+    } else if (c == '/') {
+      push_end(list, Divide, 0);
+    } else if (c == '(') {
+      push_end(list, OpenParen, 0);
+    } else if (c == ')') {
+      push_end(list, CloseParen, 0);
+    } else if (c == ' ') {
+      // no-op
+    } else {
+      drop_list(list);
+      return NULL;
+    }
+  }
+
+  return list;
 }
 
 int main() {
   char input[] = "4 * 7 + 3 - (2/4 + 9)";
   list_t *list = lexer(input);
-  
-  print_list(list);
-  drop_list(list);
+
+  if (list) {
+    print_list(list);
+    drop_list(list);
+  }
   return 0;
 }
