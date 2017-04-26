@@ -164,21 +164,46 @@ int is_stack_empty(stack_t *stack) {
 
 // Fim da pilha --------------------------------------------------------------------------------- //
 
-int main() {
+list_t* lexer(char input[]) {
   list_t *list = new_list();
 
-  // 3-1*2+3-1
-  push_start(list, Number, 3);
-  push_start(list, Subtract, 0);
-  push_start(list, Number, 1);
-  push_start(list, Multiply, 0);
-  push_start(list, Number, 2);
-  push_start(list, Add, 0);
-  push_start(list, Number, 3);
-  push_start(list, Subtract, 0);
-  push_start(list, Number, 3);
+  for (int i = 0; input[i]; i++) {
+    char c = input[i];
 
-  print_list(list);
-  drop_list(list);
+    if (c >= '0' && c <= '9') {
+      double num = atof(&input[i]);
+      push_end(list, Number, num);
+      while (input[i] == '.' || (input[i] >= '0' && input[i] <= '9')) i++;
+    } else if (c == '+') {
+      push_end(list, Add, 0);
+    } else if (c == '-') {
+      push_end(list, Subtract, 0);
+    } else if (c == '*') {
+      push_end(list, Multiply, 0);
+    } else if (c == '/') {
+      push_end(list, Divide, 0);
+    } else if (c == '(') {
+      push_end(list, OpenParen, 0);
+    } else if (c == ')') {
+      push_end(list, CloseParen, 0);
+    } else if (c == ' ') {
+      // no-op
+    } else {
+      drop_list(list);
+      return NULL;
+    }
+  }
+
+  return list;
+}
+
+int main() {
+  char input[] = "34 * 27 + 1 - (92/34 + 79.)";
+  list_t *list = lexer(input);
+
+  if (list) {
+    print_list(list);
+    drop_list(list);
+  }
   return 0;
 }
