@@ -145,6 +145,7 @@ list_t* lexer(char input[]) {
     if (c >= '0' && c <= '9') {
       double num = atof(&input[i]);
       push_end(list, Number, num);
+      while (input[i] == '.' || (input[i] >= '0' && input[i] <= '9')) i++;
     } else if (c == '+') {
       push_end(list, Add, 0);
     } else if (c == '-') {
@@ -169,7 +170,7 @@ list_t* lexer(char input[]) {
 }
 
 int main() {
-  char input[] = "4 * 7 + 3 - (2/4 + 9)";
+  char input[] = "34 * 27 + 1 - (92/34 + 79.)";
   list_t *list = lexer(input);
 
   if (list) {
