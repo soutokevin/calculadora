@@ -132,20 +132,14 @@ double pop_start(list_t * list) {
 }
 // Fim da Lista --------------------------------------------------------------------------------- //
 
+list_t* lexer(char input[]) {
+  return new_list();
+}
+
 int main() {
-  list_t *list = new_list();
-
-  // 3-1*2+3-1
-  push_start(list, Number, 3);
-  push_start(list, Subtract, 0);
-  push_start(list, Number, 1);
-  push_start(list, Multiply, 0);
-  push_start(list, Number, 2);
-  push_start(list, Add, 0);
-  push_start(list, Number, 3);
-  push_start(list, Subtract, 0);
-  push_start(list, Number, 3);
-
+  char input[] = "4 * 7 + 3 - (2/4 + 9)";
+  list_t *list = lexer(input);
+  
   print_list(list);
   drop_list(list);
   return 0;
