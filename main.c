@@ -136,6 +136,34 @@ double pop_start(list_t * list) {
 }
 // Fim da Lista --------------------------------------------------------------------------------- //
 
+// ---------------------------------------------------------------------------------------------- //
+//                                       Definição da Pilha                                       //
+// ---------------------------------------------------------------------------------------------- //
+
+typedef struct stack {
+  list_t *list;
+} stack_t;
+
+stack_t* new_stack() {
+  stack_t *stack =  (stack_t*)malloc(sizeof(stack_t));
+  stack -> list = new_list();
+  return stack;
+}
+
+void add_stack(stack_t *stack, type_t type, double val) {
+  push_start(stack -> list, type, val);
+}
+
+double remove_stack(stack_t *stack) {
+  return pop_start(stack -> list);
+}
+
+int is_stack_empty(stack_t *stack) {
+  return is_empty_list(stack -> list);
+}
+
+// Fim da pilha --------------------------------------------------------------------------------- //
+
 int main() {
   list_t *list = new_list();
 
