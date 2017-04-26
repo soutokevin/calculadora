@@ -56,7 +56,11 @@ node_t* new_node(type_t type, double data, node_t* next) {
 }
 
 void print_node(node_t* node) {
-  printf("{ type: %s, data: %f }\n", type_name(node -> type), node -> data);
+  if (node -> type == Number) {
+    printf("%5.5f\n", node -> data);
+  } else {
+    printf("%s\n", type_name(node -> type));
+  }
 }
 // Fim do nó ------------------------------------------------------------------------------------ //
 
