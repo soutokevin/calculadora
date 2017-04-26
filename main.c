@@ -164,6 +164,28 @@ int is_stack_empty(stack_t *stack) {
 
 // Fim da pilha --------------------------------------------------------------------------------- //
 
+bool validate (list_t *lista) {
+  stack_t* (temp_stack) = new_stack();
+  node_t* current = lista -> start;
+  while (current) {
+    if (current -> type == OpenParen) {
+      add_stack(temp_stack, OpenParen, 0);
+    } else if (current -> type == CloseParen) {
+      if (is_stack_empty(temp_stack)) {
+        return false;
+      } else {
+        remove_stack(temp_stack);
+      }
+    }
+    current = current -> next;
+  }
+  if (is_stack_empty(temp_stack)) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 list_t* lexer(char input[]) {
   list_t *list = new_list();
 
@@ -200,6 +222,8 @@ list_t* lexer(char input[]) {
 int main() {
   char input[] = "34 * 27 + 1 - (92/34 + 79.)";
   list_t *list = lexer(input);
+
+  printf("%d\n", validate(list));
 
   if (list) {
     print_list(list);
