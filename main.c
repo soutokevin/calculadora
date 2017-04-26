@@ -134,9 +134,18 @@ double pop_start(list_t * list) {
 
 int main() {
   list_t *list = new_list();
-  push_start(list, Number, 23);
-  push_end(list, Add, 0);
-  push_start(list, Number, 7);
+
+  // 3-1*2+3-1
+  push_start(list, Number, 3);
+  push_start(list, Subtract, 0);
+  push_start(list, Number, 1);
+  push_start(list, Multiply, 0);
+  push_start(list, Number, 2);
+  push_start(list, Add, 0);
+  push_start(list, Number, 3);
+  push_start(list, Subtract, 0);
+  push_start(list, Number, 3);
+
   print_list(list);
   drop_list(list);
   return 0;
