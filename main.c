@@ -3,7 +3,6 @@
 #include <stdbool.h>
 
 typedef enum type {
-  Other,
   Number,
   Add,
   Subtract,
@@ -32,6 +31,37 @@ char* type_name(type_t type) {
     default:
       return "Invalid";
 
+  }
+}
+
+int op_priority(type_t type) {
+  switch (type) {
+    case Add:
+      return 1;
+    case Subtract:
+      return 1;
+    case Multiply:
+      return 2;
+    case Divide:
+      return 2;
+    default:
+      return -1;
+
+  }
+}
+
+int prec(type_t type) {
+  switch (type) {
+    case Add:
+    case Subtract:
+      return 1;
+
+    case Multiply:
+    case Divide:
+      return 2;
+
+    default:
+      return 0;
   }
 }
 
@@ -120,19 +150,17 @@ void push_end(list_t * list, type_t type, double val) {
   list -> end = new_end;
 }
 
-double pop_start(list_t * list) {
+node_t* pop_start(list_t * list) {
   if (is_empty_list(list)) {
-    return -1;
+    return NULL;
   }
 
-  double data = list -> start -> data;
   node_t *removed = list -> start;
   list -> start = list -> start -> next;
-  free(removed);
   if (list -> start == NULL) {
     list -> end = NULL;
   }
-  return data;
+  return removed;
 }
 // Fim da Lista --------------------------------------------------------------------------------- //
 
@@ -154,8 +182,24 @@ void add_stack(stack_t *stack, type_t type, double val) {
   push_start(stack -> list, type, val);
 }
 
-double remove_stack(stack_t *stack) {
+node_t* remove_stack(stack_t *stack) {
   return pop_start(stack -> list);
+}
+
+type_t peek(stack_t *stack) {
+  return stack -> list -> start -> type;
+}
+
+type_t remove_stack_type(stack_t *stack) {
+  node_t *removed = remove_stack(stack);
+  type_t t = removed -> type;
+  free(removed);
+  return t;
+}
+
+void drop_stack(stack_t *stack) {
+  drop_list(stack -> list);
+  free(stack);
 }
 
 int is_stack_empty(stack_t *stack) {
@@ -197,13 +241,62 @@ list_t* lexer(char input[]) {
   return list;
 }
 
+list_t* infix2postfix(list_t *infix) {
+  stack_t *operadores = new_stack();
+  list_t *postfix = new_list();
+
+  node_t *current = pop_start(infix);
+  while (current) {
+    switch (current -> type) {
+      case Number:
+        push_end(postfix, current -> type, current -> data);
+        break;
+
+      case Add:
+      case Subtract:
+      case Divide:
+      case Multiply:
+      case OpenParen: {
+        add_stack(operadores, current -> type, 0);
+        break;
+      }
+
+      case CloseParen: {
+        type_t op = remove_stack_type(operadores);
+        while (op != OpenParen) {
+          push_end(postfix, op, 0);
+          op = remove_stack_type(operadores);
+        }
+      }
+    }
+
+    free(current);
+    current = pop_start(infix);
+  }
+
+  while (!is_stack_empty(operadores)) {
+    type_t type = remove_stack_type(operadores);
+    push_end(postfix, type, 0);
+  }
+
+  drop_stack(operadores);
+  return postfix;
+}
+
 int main() {
   char input[] = "34 * 27 + 1 - (92/34 + 79)";
-  list_t *list = lexer(input);
+  // Expected Result: "34 27 * 1 92 34 / 79 + -"
+  // Current Result: "34 27 1 92 34 79 + / - + *"
+  list_t *infixa = lexer(input);
+  list_t *posfixa = infix2postfix(infixa);
 
-  if (list) {
-    print_list(list);
-    drop_list(list);
+  if (posfixa) {
+    print_list(posfixa);
+    drop_list(infixa);
+    drop_list(posfixa);
+  } else {
+    return 1;
   }
+
   return 0;
 }
