@@ -197,6 +197,13 @@ type_t remove_stack_type(stack_t *stack) {
   return t;
 }
 
+double remove_stack_data(stack_t *stack) {
+  node_t *removed = remove_stack(stack);
+  double data = removed -> data;
+  free(removed);
+  return data;
+}
+
 void drop_stack(stack_t *stack) {
   drop_list(stack -> list);
   free(stack);
@@ -283,16 +290,50 @@ list_t* infix2postfix(list_t *infix) {
   return postfix;
 }
 
+double execute(list_t *expr) {
+  stack_t *values = new_stack();
+
+  node_t *current = pop_start(expr);
+  while (current) {
+    double result;
+
+    if (current -> type == Number) {
+      result = current -> data;
+    } else {
+      double n1 = remove_stack_data(values);
+      double n2 = remove_stack_data(values);
+
+      switch (current -> type) {
+        case Divide:   result = n1 / n2; break;
+        case Multiply: result = n1 * n2; break;
+        case Add:      result = n1 + n2; break;
+        case Subtract: result = n1 - n2; break;
+        default: exit(32);
+      }
+    }
+
+    add_stack(values, Number, result);
+
+    free(current);
+    current = pop_start(expr);
+  }
+
+  double result = remove_stack_data(values);
+  drop_stack(values);
+  return result;
+}
+
 int main() {
   char input[] = "34 * 27 + 1 - (92/34 + 79)";
   // Expected Result: "34 27 * 1 92 34 / 79 + -"
   // Current Result: "34 27 1 92 34 79 + / - + *"
   list_t *infixa = lexer(input);
   list_t *posfixa = infix2postfix(infixa);
+  drop_list(infixa);
 
   if (posfixa) {
     print_list(posfixa);
-    drop_list(infixa);
+    printf("Result: %f\n", execute(posfixa));
     drop_list(posfixa);
   } else {
     return 1;
