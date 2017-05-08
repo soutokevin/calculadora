@@ -198,6 +198,48 @@ int is_stack_empty(stack_t *stack) {
 
 // Fim da pilha --------------------------------------------------------------------------------- //
 
+// ---------------------------------------------------------------------------------------------- //
+//                                       Definição do fila                                        //
+// ---------------------------------------------------------------------------------------------- //
+
+typedef struct queue {
+  list_t *list;
+} queue_t;
+
+queue_t* new_queue() {
+  queue_t * queue = (queue_t*)malloc(sizeof(queue_t));
+  queue -> list = new_list();
+  return queue;
+}
+
+void add_queue(queue_t *queue, type_t type, double val) {
+  push_end(queue -> list, type, val);
+}
+
+node_t* remove_queue(queue_t *queue) {
+  return pop_start(queue -> list);
+}
+
+type_t remove_queue_type(queue_t *queue) {
+  node_t *node = pop_start(queue -> list);
+  type_t type = node -> type;
+  free(node);
+  return type;
+}
+
+double remove_queue_data(queue_t *queue) {
+  node_t *node = pop_start(queue -> list);
+  double data = node -> data;
+  free(node);
+  return data;
+}
+
+bool is_queue_empty(queue_t *queue) {
+  return is_empty_list(queue -> list);
+}
+
+// Fim da pilha --------------------------------------------------------------------------------- //
+
 list_t* lexer(char input[]) {
   list_t *list = new_list();
 
