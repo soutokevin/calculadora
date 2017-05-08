@@ -384,19 +384,22 @@ int main() {
 
   list_t *infixa = lexer(input);
   if (!infixa) {
-    fprintf(stderr, "Lexer Error.\n");
+    fprintf(stderr, "Erro ao analizar a expresão.\n");
     return 1;
   }
-  printf("%d\n", validate(infixa));
+
+  if (!validate(infixa)) {
+    fprintf(stderr, "Expressão Invalida.\n");
+    return 3;
+  }
 
   queue_t *posfixa = infix2postfix(infixa);
   if (!posfixa) {
-    fprintf(stderr, "Infix to Postfix Error.\n");
+    fprintf(stderr, "Erro na conversão de infixa p/ posfixa.\n");
     return 2;
   }
 
-  printf("Result: %f\n", execute(posfixa -> list));
-  // print_list(posfixa -> list);
+  printf("Resultado: %f\n", execute(posfixa -> list));
   drop_list(infixa);
   drop_list(posfixa -> list);
   free(posfixa);
