@@ -276,7 +276,7 @@ list_t* infix2postfix(list_t *infix) {
 double execute(list_t *expr) {
   stack_t *values = new_stack();
 
-  node_t *current = pop_start(expr);
+  node_t *current = expr -> start;
   while (current) {
     double result;
 
@@ -297,8 +297,7 @@ double execute(list_t *expr) {
 
     add_stack(values, Number, result);
 
-    free(current);
-    current = pop_start(expr);
+    current = current -> next;
   }
 
   double result = remove_stack_data(values);
