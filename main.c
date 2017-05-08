@@ -273,15 +273,15 @@ list_t* lexer(char input[]) {
   return list;
 }
 
-list_t* infix2postfix(list_t *infix) {
+queue_t* infix2postfix(list_t *infix) {
   stack_t *operadores = new_stack();
-  list_t *postfix = new_list();
+  queue_t *postfix = new_queue();
 
   node_t *current = pop_start(infix);
   while (current) {
     switch (current -> type) {
       case Number:
-        push_end(postfix, current -> type, current -> data);
+        add_queue(postfix, current -> type, current -> data);
         break;
 
       case Add:
@@ -293,7 +293,7 @@ list_t* infix2postfix(list_t *infix) {
           op_priority(peek(operadores)) >= op_priority(current -> type)
         ) {
           type_t op = remove_stack_type(operadores);
-          push_end(postfix, op, 0);
+          add_queue(postfix, op, 0);
         }
       }
 
@@ -304,7 +304,7 @@ list_t* infix2postfix(list_t *infix) {
       case CloseParen: {
         type_t op = remove_stack_type(operadores);
         while (op != OpenParen) {
-          push_end(postfix, op, 0);
+          add_queue(postfix, op, 0);
           op = remove_stack_type(operadores);
         }
       }
@@ -316,7 +316,7 @@ list_t* infix2postfix(list_t *infix) {
 
   while (!is_stack_empty(operadores)) {
     type_t type = remove_stack_type(operadores);
-    push_end(postfix, type, 0);
+    add_queue(postfix, type, 0);
   }
 
   drop_stack(operadores);
@@ -365,16 +365,17 @@ int main() {
     return 1;
   }
 
-  list_t *posfixa = infix2postfix(infixa);
+  queue_t *posfixa = infix2postfix(infixa);
   if (!posfixa) {
     fprintf(stderr, "Infix to Postfix Error.\n");
     return 2;
   }
 
-  printf("Result: %f\n", execute(posfixa));
-  print_list(posfixa);
+  printf("Result: %f\n", execute(posfixa -> list));
+  print_list(posfixa -> list);
   drop_list(infixa);
-  drop_list(posfixa);
+  drop_list(posfixa -> list);
+  free(posfixa);
 
   return 0;
 }
