@@ -13,6 +13,7 @@ typedef enum type {
   CloseParen
 } type_t;
 
+// O(1)
 char* type_name(type_t type) {
   switch (type) {
     case Number:
@@ -31,10 +32,10 @@ char* type_name(type_t type) {
       return "CloseParen";
     default:
       return "Invalid";
-
   }
 }
 
+// O(1)
 int op_priority(type_t type) {
   switch (type) {
     case Add:
@@ -59,6 +60,7 @@ typedef struct node {
   struct node *next;
 } node_t;
 
+// O(1)
 node_t* new_node(type_t type, double data, node_t* next) {
   node_t *node = (node_t*)malloc(sizeof(node_t));
 
@@ -69,6 +71,7 @@ node_t* new_node(type_t type, double data, node_t* next) {
   return node;
 }
 
+// O(n)
 void print_node(node_t* node) {
   if (node -> type == Number) {
     printf("%5.5f\n", node -> data);
@@ -85,6 +88,7 @@ typedef struct list {
   node_t *start, *end;
 } list_t;
 
+// O(1)
 list_t* new_list() {
   list_t *list = (list_t *)malloc(sizeof(list_t));
   list -> start = NULL;
@@ -92,6 +96,7 @@ list_t* new_list() {
   return list;
 }
 
+// O(n)
 void drop_list(list_t *list) {
   node_t *current = list -> start;
   while (current) {
@@ -102,6 +107,7 @@ void drop_list(list_t *list) {
   free(list);
 }
 
+// O(n)
 void print_list(list_t *list) {
   node_t *current = list -> start;
   while (current) {
@@ -110,10 +116,12 @@ void print_list(list_t *list) {
   }
 }
 
+// O(1)
 bool is_empty_list(list_t *list) {
   return list -> start == NULL;
 }
 
+// O(1)
 void push_start(list_t *list, type_t type, double val) {
   node_t *new_start = new_node(type, val, list -> start);
   list -> start = new_start;
@@ -122,6 +130,7 @@ void push_start(list_t *list, type_t type, double val) {
   }
 }
 
+// O(1)
 void push_end(list_t * list, type_t type, double val) {
   node_t * new_end = new_node(type, val, NULL);
 
@@ -134,6 +143,7 @@ void push_end(list_t * list, type_t type, double val) {
   list -> end = new_end;
 }
 
+// O(1)
 node_t* pop_start(list_t * list) {
   if (is_empty_list(list)) {
     return NULL;
@@ -156,24 +166,29 @@ typedef struct stack {
   list_t *list;
 } stack_t;
 
+// O(1)
 stack_t* new_stack() {
   stack_t *stack =  (stack_t*)malloc(sizeof(stack_t));
   stack -> list = new_list();
   return stack;
 }
 
+// O(1)
 void add_stack(stack_t *stack, type_t type, double val) {
   push_start(stack -> list, type, val);
 }
 
+// O(1)
 node_t* remove_stack(stack_t *stack) {
   return pop_start(stack -> list);
 }
 
+// O(1)
 type_t peek(stack_t *stack) {
   return stack -> list -> start -> type;
 }
 
+// O(1)
 type_t remove_stack_type(stack_t *stack) {
   node_t *removed = remove_stack(stack);
   type_t t = removed -> type;
@@ -181,6 +196,7 @@ type_t remove_stack_type(stack_t *stack) {
   return t;
 }
 
+// O(1)
 double remove_stack_data(stack_t *stack) {
   node_t *removed = remove_stack(stack);
   double data = removed -> data;
@@ -188,6 +204,7 @@ double remove_stack_data(stack_t *stack) {
   return data;
 }
 
+// O(n)
 void drop_stack(stack_t *stack) {
   drop_list(stack -> list);
   free(stack);
@@ -207,20 +224,24 @@ typedef struct queue {
   list_t *list;
 } queue_t;
 
+// O(1)
 queue_t* new_queue() {
   queue_t * queue = (queue_t*)malloc(sizeof(queue_t));
   queue -> list = new_list();
   return queue;
 }
 
+// O(1)
 void add_queue(queue_t *queue, type_t type, double val) {
   push_end(queue -> list, type, val);
 }
 
+// O(1)
 node_t* remove_queue(queue_t *queue) {
   return pop_start(queue -> list);
 }
 
+// O(1)
 type_t remove_queue_type(queue_t *queue) {
   node_t *node = pop_start(queue -> list);
   type_t type = node -> type;
@@ -228,6 +249,7 @@ type_t remove_queue_type(queue_t *queue) {
   return type;
 }
 
+// O(1)
 double remove_queue_data(queue_t *queue) {
   node_t *node = pop_start(queue -> list);
   double data = node -> data;
@@ -235,12 +257,14 @@ double remove_queue_data(queue_t *queue) {
   return data;
 }
 
+// O(1)
 bool is_queue_empty(queue_t *queue) {
   return is_empty_list(queue -> list);
 }
 
 // Fim da pilha --------------------------------------------------------------------------------- //
 
+// O(n)
 bool validate (list_t *lista) {
   stack_t* (temp_stack) = new_stack();
   node_t* current = lista -> start;
@@ -263,6 +287,7 @@ bool validate (list_t *lista) {
   }
 }
 
+// O(n)
 list_t* lexer(char input[]) {
   list_t *list = new_list();
 
