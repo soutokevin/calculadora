@@ -356,8 +356,9 @@ double execute(list_t *expr) {
 }
 
 int main() {
-  char input[] = "34 * 27 + 1 - (92/34 + 79)";
-  // Expected Result: "34 27 * 1 + 92 34 / 79 + -"
+  char input[100];
+  printf("Digite uma expressão: ");
+  scanf("%[^\n]s", input);
 
   list_t *infixa = lexer(input);
   if (!infixa) {
@@ -372,7 +373,7 @@ int main() {
   }
 
   printf("Result: %f\n", execute(posfixa -> list));
-  print_list(posfixa -> list);
+  // print_list(posfixa -> list);
   drop_list(infixa);
   drop_list(posfixa -> list);
   free(posfixa);
