@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 
 typedef enum type {
   Number,
@@ -377,10 +378,11 @@ double execute(list_t *expr) {
   return result;
 }
 
-int main() {
+int calculadora() {
   char input[100];
   printf("Digite uma expressão: ");
   scanf("%[^\n]s", input);
+  getchar();
 
   list_t *infixa = lexer(input);
   if (!infixa) {
@@ -399,10 +401,16 @@ int main() {
     return 2;
   }
 
-  printf("Resultado: %f\n", execute(posfixa -> list));
+  printf("Resultado: %.2f\n", execute(posfixa -> list));
   drop_list(infixa);
   drop_list(posfixa -> list);
   free(posfixa);
 
   return 0;
+}
+
+int main(const int argc, char* argv[]) {
+  bool shell = argc == 2 && (strcmp(argv[1], "-s") == 0 || strcmp(argv[1], "--shell") == 0);
+  if (shell) while(1) calculadora();
+  return calculadora();
 }
