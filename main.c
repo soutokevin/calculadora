@@ -309,17 +309,23 @@ int main() {
   char input[] = "34 * 27 + 1 - (92/34 + 79)";
   // Expected Result: "34 27 * 1 92 34 / 79 + -"
   // Current Result: "34 27 1 92 34 79 + / - + *"
-  list_t *infixa = lexer(input);
-  list_t *posfixa = infix2postfix(infixa);
-  drop_list(infixa);
 
-  if (posfixa) {
-    print_list(posfixa);
-    printf("Result: %f\n", execute(posfixa));
-    drop_list(posfixa);
-  } else {
+  list_t *infixa = lexer(input);
+  if (!infixa) {
+    fprintf(stderr, "Lexer Error.\n");
     return 1;
   }
+
+  list_t *posfixa = infix2postfix(infixa);
+  if (!posfixa) {
+    fprintf(stderr, "Infix to Postfix Error.\n");
+    return 2;
+  }
+
+  printf("Result: %f\n", execute(posfixa));
+  print_list(posfixa);
+  drop_list(infixa);
+  drop_list(posfixa);
 
   return 0;
 }
