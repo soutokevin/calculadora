@@ -295,10 +295,10 @@ double execute(list_t *expr) {
       double n2 = remove_stack_data(values);
 
       switch (current -> type) {
-        case Divide:   result = n1 / n2; break;
-        case Multiply: result = n1 * n2; break;
-        case Add:      result = n1 + n2; break;
-        case Subtract: result = n1 - n2; break;
+        case Divide:   result = n2 / n1; break;
+        case Multiply: result = n2 * n1; break;
+        case Add:      result = n2 + n1; break;
+        case Subtract: result = n2 - n1; break;
         default: exit(3);
       }
     }
