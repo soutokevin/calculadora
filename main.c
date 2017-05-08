@@ -37,31 +37,14 @@ char* type_name(type_t type) {
 int op_priority(type_t type) {
   switch (type) {
     case Add:
-      return 1;
     case Subtract:
       return 1;
     case Multiply:
-      return 2;
     case Divide:
       return 2;
     default:
       return -1;
 
-  }
-}
-
-int prec(type_t type) {
-  switch (type) {
-    case Add:
-    case Subtract:
-      return 1;
-
-    case Multiply:
-    case Divide:
-      return 2;
-
-    default:
-      return 0;
   }
 }
 
