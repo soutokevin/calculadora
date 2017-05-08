@@ -245,11 +245,19 @@ list_t* infix2postfix(list_t *infix) {
       case Add:
       case Subtract:
       case Divide:
-      case Multiply:
-      case OpenParen: {
+      case Multiply: {
+        while (
+          !is_stack_empty(operadores) &&
+          op_priority(peek(operadores)) >= op_priority(current -> type)
+        ) {
+          type_t op = remove_stack_type(operadores);
+          push_end(postfix, op, 0);
+        }
+      }
+
+      case OpenParen:
         add_stack(operadores, current -> type, 0);
         break;
-      }
 
       case CloseParen: {
         type_t op = remove_stack_type(operadores);
@@ -291,7 +299,7 @@ double execute(list_t *expr) {
         case Multiply: result = n1 * n2; break;
         case Add:      result = n1 + n2; break;
         case Subtract: result = n1 - n2; break;
-        default: exit(32);
+        default: exit(3);
       }
     }
 
@@ -307,8 +315,7 @@ double execute(list_t *expr) {
 
 int main() {
   char input[] = "34 * 27 + 1 - (92/34 + 79)";
-  // Expected Result: "34 27 * 1 92 34 / 79 + -"
-  // Current Result: "34 27 1 92 34 79 + / - + *"
+  // Expected Result: "34 27 * 1 + 92 34 / 79 + -"
 
   list_t *infixa = lexer(input);
   if (!infixa) {
