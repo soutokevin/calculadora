@@ -50,6 +50,16 @@ int op_priority(type_t type) {
   }
 }
 
+// O(1)
+bool is_op(type_t type) {
+  return (
+    type == Add ||
+    type == Subtract ||
+    type == Multiply ||
+    type == Divide
+  );
+}
+
 // ---------------------------------------------------------------------------------------------- //
 //                                 Definição do nó da lista ligada                                //
 // ---------------------------------------------------------------------------------------------- //
@@ -273,9 +283,21 @@ bool is_queue_empty(queue_t *queue) {
 
 // O(n)
 bool validate (queue_t *lista) {
-  stack_t* (temp_stack) = new_stack();
+  stack_t* temp_stack = new_stack();
   node_t* current = lista -> list -> start;
+  type_t type = Add;
+
   while (current) {
+    if (
+      (is_op(type) && current -> type != Number && current -> type != OpenParen) ||
+      (type == OpenParen && current -> type != Number) ||
+      (type == CloseParen && !is_op(current -> type)) ||
+      (type == Number && (!is_op(current -> type) || current -> type == CloseParen))
+    ) {
+      return false;
+    }
+
+    type = current -> type;
     if (current -> type == OpenParen) {
       add_stack(temp_stack, OpenParen, 0);
     } else if (current -> type == CloseParen) {
@@ -287,11 +309,8 @@ bool validate (queue_t *lista) {
     }
     current = current -> next;
   }
-  if (is_stack_empty(temp_stack)) {
-    return true;
-  } else {
-    return false;
-  }
+
+  return is_stack_empty(temp_stack);
 }
 
 // O(n)
@@ -328,7 +347,7 @@ queue_t* lexer(char input[]) {
   return list;
 }
 
-// O(n)
+// O(n²)
 queue_t* infix2postfix(queue_t *infix) {
   stack_t *operadores = new_stack();
   queue_t *postfix = new_queue();
