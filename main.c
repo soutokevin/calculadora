@@ -210,6 +210,7 @@ void drop_stack(stack_t *stack) {
   free(stack);
 }
 
+// O(1)
 int is_stack_empty(stack_t *stack) {
   return is_empty_list(stack -> list);
 }
@@ -257,6 +258,12 @@ double remove_queue_data(queue_t *queue) {
   return data;
 }
 
+// O(n)
+void drop_queue(queue_t *queue) {
+  drop_list(queue -> list);
+  free(queue);
+}
+
 // O(1)
 bool is_queue_empty(queue_t *queue) {
   return is_empty_list(queue -> list);
@@ -265,9 +272,9 @@ bool is_queue_empty(queue_t *queue) {
 // Fim da pilha --------------------------------------------------------------------------------- //
 
 // O(n)
-bool validate (list_t *lista) {
+bool validate (queue_t *lista) {
   stack_t* (temp_stack) = new_stack();
-  node_t* current = lista -> start;
+  node_t* current = lista -> list -> start;
   while (current) {
     if (current -> type == OpenParen) {
       add_stack(temp_stack, OpenParen, 0);
@@ -288,32 +295,32 @@ bool validate (list_t *lista) {
 }
 
 // O(n)
-list_t* lexer(char input[]) {
-  list_t *list = new_list();
+queue_t* lexer(char input[]) {
+  queue_t *list = new_queue();
 
   for (int i = 0; input[i]; i++) {
     char c = input[i];
 
     if (c >= '0' && c <= '9') {
       double num = atoll(&input[i]);
-      push_end(list, Number, num);
+      add_queue(list, Number, num);
       while ((input[i+1] >= '0' && input[i+1] <= '9')) i++;
     } else if (c == '+') {
-      push_end(list, Add, 0);
+      add_queue(list, Add, 0);
     } else if (c == '-') {
-      push_end(list, Subtract, 0);
+      add_queue(list, Subtract, 0);
     } else if (c == '*') {
-      push_end(list, Multiply, 0);
+      add_queue(list, Multiply, 0);
     } else if (c == '/') {
-      push_end(list, Divide, 0);
+      add_queue(list, Divide, 0);
     } else if (c == '(') {
-      push_end(list, OpenParen, 0);
+      add_queue(list, OpenParen, 0);
     } else if (c == ')') {
-      push_end(list, CloseParen, 0);
+      add_queue(list, CloseParen, 0);
     } else if (c == ' ') {
       // no-op
     } else {
-      drop_list(list);
+      drop_queue(list);
       return NULL;
     }
   }
@@ -321,11 +328,11 @@ list_t* lexer(char input[]) {
   return list;
 }
 
-queue_t* infix2postfix(list_t *infix) {
+queue_t* infix2postfix(queue_t *infix) {
   stack_t *operadores = new_stack();
   queue_t *postfix = new_queue();
 
-  node_t *current = pop_start(infix);
+  node_t *current = remove_queue(infix);
   while (current) {
     switch (current -> type) {
       case Number:
@@ -359,7 +366,7 @@ queue_t* infix2postfix(list_t *infix) {
     }
 
     free(current);
-    current = pop_start(infix);
+    current = remove_queue(infix);
   }
 
   while (!is_stack_empty(operadores)) {
@@ -409,7 +416,7 @@ int calculadora() {
   scanf("%[^\n]s", input);
   getchar();
 
-  list_t *infixa = lexer(input);
+  queue_t *infixa = lexer(input);
   if (!infixa) {
     fprintf(stderr, "Erro ao analizar a expresão.\n");
     return 1;
@@ -427,9 +434,8 @@ int calculadora() {
   }
 
   printf("Resultado: %.2f\n", execute(posfixa -> list));
-  drop_list(infixa);
-  drop_list(posfixa -> list);
-  free(posfixa);
+  drop_queue(infixa);
+  drop_queue(posfixa);
 
   return 0;
 }
