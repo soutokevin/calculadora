@@ -328,6 +328,7 @@ queue_t* lexer(char input[]) {
   return list;
 }
 
+// O(n)
 queue_t* infix2postfix(queue_t *infix) {
   stack_t *operadores = new_stack();
   queue_t *postfix = new_queue();
@@ -378,6 +379,7 @@ queue_t* infix2postfix(queue_t *infix) {
   return postfix;
 }
 
+// O(n)
 double execute(list_t *expr) {
   stack_t *values = new_stack();
 
@@ -410,6 +412,7 @@ double execute(list_t *expr) {
   return result;
 }
 
+// O(n)
 int calculadora() {
   char input[100];
   printf("Digite uma expressão: ");
